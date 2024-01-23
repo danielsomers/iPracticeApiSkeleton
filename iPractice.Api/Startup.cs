@@ -1,3 +1,4 @@
+using iPractice.Api.Services;
 using iPractice.DataAccess;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -6,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using FluentValidation.AspNetCore;
 
 namespace iPractice.Api
 {
@@ -33,8 +35,10 @@ namespace iPractice.Api
             });
             
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(Configuration.GetConnectionString("Sqlite")));
-
-            services.AddControllers();
+            services.AddTransient<IAvailabilityService, AvailabilityService>();
+            services.AddTransient<IClientService, ClientService>();
+            services.AddControllers()
+                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<AvailabilityValidator>());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
